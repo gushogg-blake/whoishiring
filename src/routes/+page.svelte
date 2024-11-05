@@ -47,7 +47,7 @@
   }
 
   /* Changing url */
-  $:tagsParam = ($page.url.searchParams.get('tags'))?.split(',')
+  $:tagsParam = ($page.url.searchParams.get('tags'))?.split(',') || []
   $:qParam = $page.url.searchParams.get('q')
   $:remoteParam = $page.url.searchParams.get('remote')
   $:savedParam = $page.url.searchParams.get('savedJobs')
@@ -100,12 +100,14 @@
   });
 
   /* Tags */
-  let tagsToFilter: string[] = [];
   function handleTags(tag: string) {
-    if (tagsToFilter.includes(tag)) {
-      tagsToFilter = tagsToFilter.filter((t) => t !== tag);
+    let negated = '-' + tag;
+    if (tagsParam.includes(tag)) {
+      tagsParam = [...tagsParam.filter((t) => t !== tag), negated];
+    } else if (tagsParam.includes(negated)) {
+      tagsParam = tagsParam.filter((t) => t !== negated);
     } else {
-      tagsToFilter = [...tagsToFilter, tag];
+      tagsParam = [...tagsParam, tag];
     }
   }
 
@@ -155,8 +157,8 @@
     <div class="pv-1">
       <div class="flex-and-row-wrap gap-half v-center min-h-4">
         <span class="heading wavy">Popular Filters</span>
-        {#if tagsToFilter.length > 0 || tagsParam != null}
-          <Reset click={() => tagsToFilter = []}>reset</Reset>
+        {#if tagsParam.length > 0}
+          <Reset click={() => tagsParam = []}>reset</Reset>
         {/if}
       </div>
       <div class="tags-container flex-and-row-wrap gap-half">
@@ -165,7 +167,8 @@
           {#each tags as tag}
             <div>
               <Button
-                toggle={tagsToFilter.includes(tag) || tagsParam?.includes(tag)}
+                active={tagsParam.includes(tag)}
+                exclude={tagsParam.includes('-' + tag)}
                 click={() => handleTags(tag)}>
                   {tag}
               </Button>
@@ -216,11 +219,11 @@
     {/if}
 
     <!-- Use hidden input to send tags info in URL -->
-    {#if tagsToFilter.length > 0}
+    {#if tagsParam.length > 0}
       <input
         type="hidden"
         name="tags"
-        value={tagsToFilter}
+        value={tagsParam}
       />
     {/if}
 

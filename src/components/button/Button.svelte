@@ -1,12 +1,15 @@
 <script lang="ts">
   export let disabled = false;
   export let click = () => {};
-  export let toggle = false;
+  export let active = false;
+  export let exclude = false;
 </script>
 
 
 <button
-  class={`${toggle ? 'active': ''} ${disabled ? 'disabled': ''}`}
+  class:active
+  class:exclude
+  class:disabled
   on:click={() => click()}
   disabled={disabled}
 >
@@ -38,6 +41,11 @@
   .active {
     color: #F9F5EB;
     background-color: #4E7539;
+  }
+
+  .exclude {
+    color: #F9F5EB;
+    background-color: #7C1010;
   }
 
   .disabled {

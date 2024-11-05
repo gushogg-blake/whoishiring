@@ -7,7 +7,7 @@
 </script>
 
 
-<Button click={click} toggle={toggle} disabled={disabled}>
+<Button click={click} active={toggle} disabled={disabled}>
   <slot></slot>
 
   {#if toggle}
